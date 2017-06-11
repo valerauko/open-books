@@ -1,4 +1,4 @@
-(ns open-books.views
+(ns open-books.views.static
   (:require [clojure.string])
 )
 

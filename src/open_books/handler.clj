@@ -11,47 +11,48 @@
                             [author :as authors]
                             [login :as login]
                             [home :as home]]
-    [open-books.views :as view]
+    [open-books.views.static :as view]
+    [ring.middleware.session :as session]
   )
 )
 
 (defroutes open-books-routes
-  (context "/api" []
+  (context "/api" {s :session p :params}
     (context "/join" []
-      (GET  "/"     []    (join/form) )
-      (POST "/"     []    (join/create) )
-      (GET  "/:key" [key] (join/confirm key) )
+      (GET  "/"     []    (join/form s) )
+      (POST "/"     []    (join/create p s) )
+      (GET  "/:key" [key] (join/confirm key s) )
     )
 
     (context "/reader/:user" [user]
-      (GET    "/" [] (users/show user) )
-      (PATCH  "/" [] (users/patch user) )
-      (DELETE "/" [] (users/delete user) )
+      (GET    "/" [] (users/show user s) )
+      (PATCH  "/" [] (users/patch user p s) )
+      (DELETE "/" [] (users/delete user s) )
     )
 
     (context "/read" []
-      (POST   "/"    []   (record/create) )
-      (PATCH  "/:id" [id] (record/patch id) )
-      (DELETE "/:id" [id] (record/delete id) )
+      (POST   "/"    []   (record/create p s) )
+      (PATCH  "/:id" [id] (record/patch id p s) )
+      (DELETE "/:id" [id] (record/delete id p s) )
     )
 
     (context "/book/:title" [title]
-      (GET "/"    []   (books/search title) )
-      (GET "/:id" [id] (books/show id) )
+      (GET "/"    []   (books/search title s) )
+      (GET "/:id" [id] (books/show id s) )
     )
 
     (context "/author/:name" [name]
-      (GET "/"    []   (authors/search name) )
-      (GET "/:id" [id] (authors/show id) )
+      (GET "/"    []   (authors/search name s) )
+      (GET "/:id" [id] (authors/show id s) )
     )
 
     (context "/login" []
-      (GET  "/" [] (login/form) )
-      (POST "/" [] (login/create) )
+      ;(GET  "/" [] (login/form) )
+      (POST "/" [] (login/create p s) )
     )
 
     (context "/" []
-      (GET  "/" [] (home/timeline) )
+      (GET  "/" [] (home/timeline s) )
     )
 
     (route/not-found (json/write-str {:message "Requested resource not found."}))
@@ -62,5 +63,5 @@
 )
 
 (defn -main []
-  (run-server open-books-routes {:port 8080})
+  (run-server (-> open-books-routes session/wrap-session) {:port 8080})
 )
