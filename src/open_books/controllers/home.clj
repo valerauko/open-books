@@ -4,7 +4,6 @@
 
 (defn timeline
   "Show timeline"
-  []
+  [session]
   ; TODO
-  "HELLO BABY"
 )

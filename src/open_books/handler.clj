@@ -46,14 +46,9 @@
       (GET "/:id" [id] (authors/show id s) )
     )
 
-    (context "/login" []
-      ;(GET  "/" [] (login/form) )
-      (POST "/" [] (login/create p s) )
-    )
-
-    (context "/" []
-      (GET  "/" [] (home/timeline s) )
-    )
+    (POST   "/login"  [] (login/create p s) )
+    (DELETE "/login"  [] (login/destroy s) ) ; delete login = logout. herpa derpa.
+    (GET    "/"       [] (home/timeline s) )
 
     (route/not-found (json/write-str {:message "Requested resource not found."}))
   )
