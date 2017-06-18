@@ -1,6 +1,8 @@
 (ns open-books.models.user)
 
 ; TODO
+; * validate received data
+;
 ; * authenticate user with mail / pass
 ; * authenticate user with session key
 ; * fetch data for current user

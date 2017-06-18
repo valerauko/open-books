@@ -5,6 +5,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
                  [compojure "1.5.1"]
-                 [http-kit "2.1.16"]]
+                 [http-kit "2.1.16"]
+                 [com.orientechnologies/orientdb-graphdb "2.2.21"]
+                 [com.orientechnologies/orientdb-client "2.2.21"]]
   :main open-books.handler/-main
 )
