@@ -1,13 +1,14 @@
 (ns clj-orient2.core
+  (:require [clojure.string])
   (:import (com.tinkerpop.blueprints.impls.orient OrientGraph
                                                   OrientGraphFactory))
   (:import (com.orientechnologies.orient.core.db ODatabaseRecordThreadLocal))
   (:import (com.orientechnologies.orient.core.sql OCommandSQL)))
 
-(defn get-graph [url user pass]
+(defn get-graph []; [url user pass]
   "Return a transaction graph from the current graph factory."
-  (.getTx @graph-factory)
-  (OrientGraph. url user pass))
+  (.getTx (OrientGraphFactory. "remote:localhost/open-books" "open-books" (clojure.string/trim-newline (slurp ".orient_key"))))
+  ); (.getTx @graph-factory))
 
 (defn commit [g]
   (.commit g))
@@ -19,17 +20,15 @@
   (.shutdown g))
 
 (defmacro with-orient [g & body]
-  `(let [~g (orient-tx)]
-     (try ~@body
-          (finally (close-graph ~g)))))
+  `(try ~@body
+        (finally (close-graph ~g))))
 
 (defn sql [g & c]
-  "Return a sequence of results from running sql command c on graph g.
-Applies str to c."
+  "Return a sequence of results from running sql command c on graph g. Applies str to c."
   (seq (.execute (.command g (OCommandSQL. (apply str c))) nil)))
 
 (defn sql' [g & c]
-  "Return a result from running sql command c on graph g.  Does not run seq on its output."
+  "Return a result from running sql command c on graph g. Does not run seq on its output."
   (.execute (.command g (OCommandSQL. (apply str c))) nil))
 
 (defn get-vertices-of-class [g c]
